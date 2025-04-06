@@ -1,10 +1,7 @@
 import time
 
 # Simulated network data (always current)
-NETWORK_DATA = {
-    "user:1": "Alice - Updated",
-    "user:2": "Bob - Updated"
-}
+NETWORK_DATA = {f"user:{i}": f"User {i} - Updated" for i in range(1, 1001)}
 
 # Logs for analysis
 event_log = []
