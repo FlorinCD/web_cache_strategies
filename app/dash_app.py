@@ -6,6 +6,7 @@ from dash import html, dcc
 import plotly.graph_objs as go
 import requests
 import time
+import json
 
 app = dash.Dash(__name__)
 app.title = "Cache Strategy Dashboard"
@@ -15,9 +16,15 @@ app.title = "Cache Strategy Dashboard"
 # ----------------------
 
 
-def get_stats():
+def get_stats(strategy_type):
     try:
-        return requests.get("http://localhost:5000/stats").json()
+        if strategy_type == "cache_first":
+            return requests.get("http://localhost:5000/cache_first_stats").json()
+        elif strategy_type == "network_first":
+            return requests.get("http://localhost:5000/network_first_stats").json()
+        elif strategy_type == "stale_while_revalidate":
+            return requests.get("http://localhost:5000/stale_while_revalidate_stats").json()
+        return json.dumps({"error": "Invalid strategy type"})
     except:
         return {}
 
@@ -58,11 +65,18 @@ app.layout = html.Div(style={"fontFamily": "Arial", "padding": 20}, children=[
     [dash.dependencies.Input("interval", "n_intervals")]
 )
 def update_stats(n):
-    stats = get_stats()
-    labels = list(stats.keys())
-    values = list(stats.values())
-    fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.4)])
-    fig.update_layout(title="Cache Hits / Misses / Updates", margin={"t": 50})
+    strategy_type = "cache_first"  # here we decide what strategy to display, eg: "cache_first"
+
+    if strategy_type == "cache_first":
+        stats = get_stats(strategy_type)
+        labels = list(stats.keys())
+        values = list(stats.values())
+        fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.4)])
+        fig.update_layout(title="Hits / Misses / latency_hits / latency_misses", margin={"t": 50})
+    elif strategy_type == "network_first":
+        pass
+    elif strategy_type == "stale_while_revalidate":
+        pass
     return fig
 
 

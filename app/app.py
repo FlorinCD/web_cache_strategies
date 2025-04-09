@@ -8,7 +8,7 @@ def create_app():
     app.config['CACHE_TYPE'] = 'RedisCache'
     app.config['CACHE_REDIS_HOST'] = 'localhost'
     app.config['CACHE_REDIS_PORT'] = 6379
-    app.config['CACHE_DEFAULT_TIMEOUT'] = 60  # TTL
+    app.config['CACHE_DEFAULT_TIMEOUT'] = 50  # TTL
 
     cache_obj = Cache(app)
 
