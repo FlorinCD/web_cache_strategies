@@ -110,12 +110,13 @@ def log():
 
 @routes.route('/clear-cache', methods=['GET', 'POST'])
 def clear_cache():
+    global cache_first_stats, network_first_stats, stale_while_revalidate_stats
     cache_obj = current_app.cache
     cache_obj.clear()
 
-    cache_first_stats = {"hits": 0, "misses": 0, "updates": 0}
+    cache_first_stats = {"hits": 0, "misses": 0, "latency_hits": [], "latency_misses": []}
     network_first_stats = {"updates": 0, "latency_network": []}
-    stale_while_revalidate_stats = {"hits": 0,"updates": 0,"misses": 0,"latency_stale": 0,"latency_misses": 0}
+    stale_while_revalidate_stats = {"hits": 0, "updates": 0, "misses": 0, "latency_stale": 0, "latency_misses": 0}
 
     event_log.clear()
     return jsonify({"status": "Cache cleared"})
