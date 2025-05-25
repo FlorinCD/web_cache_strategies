@@ -1,5 +1,6 @@
 import time
 import threading
+import random
 from flask import jsonify, Blueprint, current_app
 from app.utilities import fetch_from_network, event_log, cache_first_stats, network_first_stats, stale_while_revalidate_stats
 
@@ -45,6 +46,10 @@ def network_first(key):
     cache_obj = current_app.cache
     start_time = time.time()  # Start timer
     data = fetch_from_network(key)
+    # simulate extracting the data from cache to check if it's the same with network data
+    chance = random.random() > 0.5
+    if chance:
+        network_first_stats["same_as_in_cache_counts"] += 1
     cache_obj.set(key, data)
     network_first_stats["updates"] += 1
     event_log.append({"event": "network_fetch", "key": key, "time": time.time()})
@@ -114,9 +119,9 @@ def clear_cache():
     cache_obj = current_app.cache
     cache_obj.clear()
 
-    cache_first_stats = {"hits": 0, "misses": 0, "latency_hits": [], "latency_misses": []}
-    network_first_stats = {"updates": 0, "latency_network": []}
-    stale_while_revalidate_stats = {"hits": 0, "updates": 0, "misses": 0, "latency_stale": 0, "latency_misses": 0}
+    cache_first_stats = {"hits": 0, "misses": 0, "latency_hits": [], "latency_misses": [], "same_as_in_cache_counts": 0,}
+    network_first_stats = {"updates": 0, "latency_network": [], "same_as_in_cache_counts": 0,}
+    stale_while_revalidate_stats = {"hits": 0, "updates": 0, "misses": 0, "latency_stale": [], "latency_misses": [], "same_as_in_cache_counts": 0,}
 
     event_log.clear()
     return jsonify({"status": "Cache cleared"})
