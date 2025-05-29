@@ -4,7 +4,7 @@ import dotenv
 import os
 
 dotenv.load_dotenv()
-CACHE_STRATEGY = os.getenv("CACHING_STRATEGY")
+CACHE_STRATEGY = os.getenv("CACHE_STRATEGY")
 
 class CacheUser(HttpUser):
     wait_time = between(1, 3)
@@ -18,7 +18,7 @@ class CacheUser(HttpUser):
         @task
         def network_first(self):
             key = random.choice([f"user:{i}" for i in range(1, 1001)])
-            self.client.get(f"/cache-first/{key}")
+            self.client.get(f"/network-first/{key}")
     else:
         @task
         def network_first(self):

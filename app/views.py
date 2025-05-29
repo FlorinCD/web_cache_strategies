@@ -22,6 +22,7 @@ def cache_test(key):
 
 @routes.route('/cache-first/<key>', methods=['GET', 'POST'])
 def cache_first(key):
+    global cache_first_stats
     cache_obj = current_app.cache
     start_time = time.time()  # Start timer
     cached = cache_obj.get(key)
